@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: matrix-cuda
+  labels:
+    app: matrix-cuda
+spec:
+  completions: 3
+  parallelism: 3
+  template:
+    metadata:
+      labels:
+        app: matrix-cuda
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: matrix-cuda
+        image: justin0u0/matrix-cuda:latest
+        imagePullPolicy: Always
+        command:
+        - matrix-cuda
+        - "10000"
+        - "10000"
+        - "10000"
+        - "100"
+        resources:
+          limits:
+            nvidia.com/gpu: 1
