@@ -192,11 +192,14 @@ int main(int argc, char const *argv[])
         }
 
         float gpu_elapsed_time_ms;
+        float kernel_elapsed_time_ms;
 
         // some events to count the execution time
-        cudaEvent_t start, stop;
+        cudaEvent_t start, stop, kernel_start, kernel_stop;
         cudaEventCreate(&start);
         cudaEventCreate(&stop);
+        cudaEventCreate(&kernel_start);
+        cudaEventCreate(&kernel_stop);
 
         // start to count execution time of GPU version
         cudaEventRecord(start, 0);
@@ -216,6 +219,7 @@ int main(int argc, char const *argv[])
         dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
     
         // Launch kernel 
+        cudaEventRecord(kernel_start, 0);
         if(m == n && n == k)
         {
             gpu_square_matrix_mult<<<dimGrid, dimBlock>>>(d_a, d_b, d_c, n);    
@@ -224,6 +228,8 @@ int main(int argc, char const *argv[])
         {
             gpu_matrix_mult<<<dimGrid, dimBlock>>>(d_a, d_b, d_c, m, n, k);    
         }
+        cudaEventRecord(kernel_stop, 0);
+
         // Transefr results from device to host 
         cudaMemcpy(h_c, d_c, sizeof(int)*m*k, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
@@ -233,7 +239,9 @@ int main(int argc, char const *argv[])
 
         // compute time elapse on GPU computing
         cudaEventElapsedTime(&gpu_elapsed_time_ms, start, stop);
+        cudaEventElapsedTime(&kernel_elapsed_time_ms, kernel_start, kernel_stop);
         printf("Time elapsed on matrix multiplication of %dx%d . %dx%d on GPU: %f ms.\n\n", m, n, n, k, gpu_elapsed_time_ms);
+        printf("Kernel time elapsed on matrix multiplication of %dx%d . %dx%d on GPU: %f ms.\n\n", m, n, n, k, kernel_elapsed_time_ms);
 
         // free memory
         cudaFree(d_a);
