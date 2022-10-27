@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: device-query
+  labels:
+    app: device-query
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: device-query
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: device-query
+        image: izone/device-query
+        imagePullPolicy: Always
+        resources:
+          limits:
+            nvidia.com/gpu: 1

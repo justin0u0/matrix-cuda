@@ -5,8 +5,9 @@ metadata:
   labels:
     app: matrix-cuda
 spec:
-  completions: 3
-  parallelism: 3
+  completions: 4
+  parallelism: 4
+  backoffLimit: 0
   template:
     metadata:
       labels:
@@ -18,11 +19,11 @@ spec:
         image: justin0u0/matrix-cuda:latest
         imagePullPolicy: Always
         command:
-        - matrix-cuda
-        - "10000"
-        - "10000"
-        - "10000"
-        - "100"
+        - matrix-cuda # do matrix multiplication n*m*k t times
+        - "8000" # n
+        - "8000" # m
+        - "8000" # k
+        - "20"   # t
         resources:
           limits:
             nvidia.com/gpu: 1

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cuda-runtime
+  labels:
+    app: cuda-runtime
+spec:
+  containers:
+  - name: cuda-runtime
+    image: nvidia/cuda:11.4.0-runtime
+    command:
+    - tail
+    - -f
+    - /dev/null
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+
+# Can do nvidia-smi in the pod.
